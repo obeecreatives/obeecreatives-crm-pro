@@ -1,0 +1,26 @@
+{
+  "id": "/crm-obeecreatives",
+  "start_url": "/",
+  "scope": "/",
+  "name": "CRM OBEECREATIVES",
+  "short_name": "ObeeCRM",
+  "description": "Unified Workspace OS - CRM Clients Hub & Operasional Agensi Kreatif",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0B0F17",
+  "background_color": "#0B0F17",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

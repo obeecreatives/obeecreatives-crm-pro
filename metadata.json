@@ -1,0 +1,6 @@
+{
+  "name": "CRM OBEECREATIVES",
+  "description": "Sistem Web Apps CRM terpadu untuk Obeecreatives - Pengelolaan Klien, Divisi, Kontak, Integrasi Google Sheets API & PWA",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
