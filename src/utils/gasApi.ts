@@ -783,54 +783,141 @@ function setPaymentStatus(id, status) {
 `;
 
 /**
- * Test connection using server-side proxy `/api/gas-proxy`.
+ * Robust execution of GAS requests.
+ * 1. Executes DIRECT fetch first (instant, CORS-enabled via Google's redirect mechanism).
+ * 2. If direct fetch has a network error, attempts proxy /api/gas-proxy.
+ * 3. Never throws "Unexpected token '<'" by safely inspecting content before JSON parsing.
  */
-export async function testGasConnection(targetUrl: string = DEFAULT_GAS_CRM_URL): Promise<GasProxyResponse> {
-  try {
-    const proxyUrl = `/api/gas-proxy?url=${encodeURIComponent(targetUrl)}&action=ping`;
-    const res = await fetch(proxyUrl, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-    });
+export async function executeGasRequest(
+  targetUrl: string,
+  action: string,
+  method: 'GET' | 'POST' = 'GET',
+  payload?: any
+): Promise<GasProxyResponse> {
+  const cleanUrl = (targetUrl || DEFAULT_GAS_CRM_URL).trim();
 
-    if (!res.ok) {
-      const errText = await res.text();
+  // --- STRATEGY 1: Direct Fetch (fastest, client-side, native CORS support) ---
+  try {
+    let directUrl = cleanUrl;
+    try {
+      const urlObj = new URL(directUrl);
+      urlObj.searchParams.set('action', action);
+      urlObj.searchParams.set('_t', String(Date.now()));
+      directUrl = urlObj.toString();
+    } catch {
+      directUrl += directUrl.includes('?') ? `&action=${action}&_t=${Date.now()}` : `?action=${action}&_t=${Date.now()}`;
+    }
+
+    const fetchOptions: RequestInit = {
+      method: method === 'POST' ? 'POST' : 'GET',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+      },
+      redirect: 'follow',
+      mode: 'cors',
+    };
+
+    if (method === 'POST' && payload) {
+      // Use text/plain to avoid CORS OPTIONS preflight blocking in browsers
+      fetchOptions.headers = {
+        'Content-Type': 'text/plain;charset=utf-8',
+      };
+      fetchOptions.body = JSON.stringify({ action, payload });
+    }
+
+    const res = await fetch(directUrl, fetchOptions);
+    const text = await res.text();
+    const trimmed = text.trim();
+
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      const parsed = JSON.parse(trimmed);
       return {
-        status: 'error',
-        message: `Server Proxy Error (${res.status}): ${errText.slice(0, 200)}`,
+        status: parsed.status || 'success',
+        message: parsed.message || (parsed.status === 'success' ? 'Koneksi ke Google Apps Script berhasil!' : 'Pesan dari Apps Script'),
+        data: parsed.data !== undefined ? parsed.data : parsed,
       };
     }
 
-    const data: GasProxyResponse = await res.json();
-    return data;
-  } catch (err: unknown) {
+    if (trimmed.includes('Akses Ditolak') || trimmed.includes('AccessDenied') || trimmed.includes('accounts.google.com')) {
+      return {
+        status: 'error',
+        code: 'ACCESS_DENIED',
+        title: 'Akses Ditolak oleh Apps Script',
+        message: 'Endpoint Google Apps Script belum dapat diakses publik. Pada jendela deploy Google Apps Script, pastikan opsi "Who has access" diset ke "Anyone" (Siapa saja).',
+        rawSnippet: trimmed.slice(0, 160),
+      };
+    }
+
+    if (trimmed.startsWith('<!doctype') || trimmed.startsWith('<html') || trimmed.startsWith('<')) {
+      return {
+        status: 'error',
+        code: 'HTML_RESPONSE',
+        title: 'Endpoint Mengembalikan HTML',
+        message: 'Endpoint Google Apps Script mengembalikan halaman web (HTML), bukan data JSON API V2. Silakan pastikan skrip Code.gs V2 telah dipasang dan dideploy.',
+        rawSnippet: trimmed.slice(0, 160),
+      };
+    }
+  } catch (directErr: any) {
+    console.warn('Direct fetch to Google Apps Script failed, attempting server proxy fallback...', directErr);
+  }
+
+  // --- STRATEGY 2: Server-side proxy fallback (/api/gas-proxy) ---
+  try {
+    const proxyUrl = `/api/gas-proxy?url=${encodeURIComponent(cleanUrl)}&action=${encodeURIComponent(action)}&_t=${Date.now()}`;
+    const res = await fetch(proxyUrl, {
+      method: method === 'POST' ? 'POST' : 'GET',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+      },
+      body: method === 'POST' && payload ? JSON.stringify({ url: cleanUrl, action, payload }) : undefined,
+    });
+
+    const text = await res.text();
+    const trimmed = text.trim();
+
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      const parsed = JSON.parse(trimmed);
+      return {
+        status: parsed.status || 'success',
+        message: parsed.message || 'Koneksi proxy berhasil',
+        data: parsed.data !== undefined ? parsed.data : parsed,
+        code: parsed.code,
+      };
+    }
+
+    if (trimmed.startsWith('<!doctype') || trimmed.startsWith('<html') || trimmed.startsWith('<')) {
+      return {
+        status: 'error',
+        code: 'HTML_RESPONSE',
+        title: 'Halaman Web Diterima',
+        message: 'Aplikasi menerima halaman web (HTML). Mode database lokal tetap aktif dengan aman.',
+        rawSnippet: trimmed.slice(0, 160),
+      };
+    }
+
     return {
       status: 'error',
-      message: `Gagal memanggil endpoint: ${err instanceof Error ? err.message : String(err)}. Mode database lokal tetap aktif dengan aman.`,
+      message: `Respon tidak valid: ${trimmed.slice(0, 120)}`,
+    };
+  } catch (proxyErr: any) {
+    return {
+      status: 'error',
+      message: `Gagal memanggil endpoint: ${proxyErr.message || String(proxyErr)}. Mode database lokal tetap aktif dengan aman.`,
     };
   }
 }
 
 /**
- * Fetch all sheets data from Google Apps Script via proxy
+ * Test connection to Google Apps Script.
+ */
+export async function testGasConnection(targetUrl: string = DEFAULT_GAS_CRM_URL): Promise<GasProxyResponse> {
+  return await executeGasRequest(targetUrl, 'ping', 'GET');
+}
+
+/**
+ * Fetch all sheets data from Google Apps Script
  */
 export async function fetchAllSheetsData(targetUrl: string = DEFAULT_GAS_CRM_URL): Promise<GasProxyResponse> {
-  try {
-    const proxyUrl = `/api/gas-proxy?url=${encodeURIComponent(targetUrl)}&action=getAll`;
-    const res = await fetch(proxyUrl, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    return await res.json();
-  } catch (err: unknown) {
-    return {
-      status: 'error',
-      message: err instanceof Error ? err.message : String(err),
-    };
-  }
+  return await executeGasRequest(targetUrl, 'getAll', 'GET');
 }

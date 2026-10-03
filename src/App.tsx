@@ -271,7 +271,9 @@ export default function App() {
       if (Array.isArray(result.data.paymentConfirmations) && result.data.paymentConfirmations.length > 0) {
         setPayments(result.data.paymentConfirmations);
       }
-      showToast('Data sheet asli berhasil ditarik & diperbarui!', 'success');
+      const clientCount = result.data.clients?.length || 0;
+      const invoiceCount = result.data.invoices?.length || 0;
+      showToast(`Data sheet asli berhasil disinkronkan (${clientCount} klien, ${invoiceCount} invoice terupdate)!`, 'success');
     } else if (result.code === 'ACCESS_DENIED') {
       showToast('Akses Ditolak oleh Apps Script: ubah setting ke "Anyone" dan pasang skrip V2.', 'error');
       setGasScriptModalOpen(true);
