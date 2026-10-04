@@ -9,6 +9,7 @@ import {
   Trash2,
   Edit2,
   Search,
+  MessageSquare,
 } from 'lucide-react';
 import { Meeting, Client, MeetingStatus } from '../../types';
 import { formatDate } from '../../utils/formatters';
@@ -20,6 +21,7 @@ interface MeetingsViewProps {
   onEditMeeting: (meeting: Meeting) => void;
   onDeleteMeeting: (meeting: Meeting) => void;
   onUpdateStatus: (meetingId: string, status: MeetingStatus) => void;
+  onSendWhatsApp?: (meeting: Meeting) => void;
 }
 
 const STATUS_BADGES: Record<MeetingStatus, { bg: string; text: string }> = {
@@ -36,6 +38,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({
   onEditMeeting,
   onDeleteMeeting,
   onUpdateStatus,
+  onSendWhatsApp,
 }) => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -132,6 +135,15 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({
                       {m.meetingType}
                     </span>
                     <div className="flex items-center gap-1">
+                      {onSendWhatsApp && (
+                        <button
+                          onClick={() => onSendWhatsApp(m)}
+                          className="p-1.5 rounded-lg text-emerald-400 hover:text-white hover:bg-emerald-600/30 transition-colors"
+                          title="Kirim Pengingat Jadwal via WhatsApp"
+                        >
+                          <MessageSquare size={13} />
+                        </button>
+                      )}
                       <button
                         onClick={() => onEditMeeting(m)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
@@ -188,19 +200,32 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({
                   )}
                 </div>
 
-                {/* Status Toggle Selector */}
-                <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">Status:</span>
-                  <select
-                    value={m.status}
-                    onChange={(e) => onUpdateStatus(m.id, e.target.value as MeetingStatus)}
-                    className={`text-[11px] font-bold rounded-lg px-2 py-1 border focus:outline-none ${badge.bg} ${badge.text}`}
-                  >
-                    <option value="Terjadwal">Terjadwal</option>
-                    <option value="Selesai">Selesai</option>
-                    <option value="Dijadwal Ulang">Dijadwal Ulang</option>
-                    <option value="Dibatalkan">Dibatalkan</option>
-                  </select>
+                {/* Status Toggle Selector & WA Action */}
+                <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-slate-400">Status:</span>
+                    <select
+                      value={m.status}
+                      onChange={(e) => onUpdateStatus(m.id, e.target.value as MeetingStatus)}
+                      className={`text-[11px] font-bold rounded-lg px-2 py-1 border focus:outline-none ${badge.bg} ${badge.text}`}
+                    >
+                      <option value="Terjadwal">Terjadwal</option>
+                      <option value="Selesai">Selesai</option>
+                      <option value="Dijadwal Ulang">Dijadwal Ulang</option>
+                      <option value="Dibatalkan">Dibatalkan</option>
+                    </select>
+                  </div>
+
+                  {onSendWhatsApp && (
+                    <button
+                      onClick={() => onSendWhatsApp(m)}
+                      className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/80 px-2 py-1 rounded-lg border border-emerald-900/50 transition-colors cursor-pointer"
+                      title="Kirim Pengingat WhatsApp"
+                    >
+                      <MessageSquare size={12} />
+                      <span>Kirim WA</span>
+                    </button>
+                  )}
                 </div>
               </div>
             );

@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   ExternalLink,
   Download,
+  BarChart3,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -61,6 +62,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     { id: 'quotations', label: 'Quotation Penawaran', icon: FileSpreadsheet },
     { id: 'invoices', label: 'Invoice Tagihan', icon: Receipt },
     { id: 'payments', label: 'Payment Confirmation', icon: CreditCard },
+    { id: 'reports', label: 'Laporan & Ekspor Agensi', icon: BarChart3 },
     { id: 'settings', label: 'Pengaturan & Akses (RBAC)', icon: Settings },
   ];
 

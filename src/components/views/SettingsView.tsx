@@ -22,9 +22,11 @@ import {
   Laptop,
   Share,
   PlusSquare,
+  Clock,
 } from 'lucide-react';
 import { UserRole } from '../../types';
 import { DEFAULT_GAS_CRM_URL, DEFAULT_GAS_EQUIPMENT_URL, testGasConnection } from '../../utils/gasApi';
+import { FUTURE_FEATURES_ROADMAP } from '../../data/featureRoadmap';
 
 interface SettingsViewProps {
   userRole: UserRole;
@@ -96,7 +98,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   isInstalled,
   isInstallable,
 }) => {
-  const [activeTab, setActiveTab] = useState<'rbac' | 'sheets' | 'backup' | 'pwa'>('rbac');
+  const [activeTab, setActiveTab] = useState<'rbac' | 'sheets' | 'backup' | 'pwa' | 'roadmap'>('rbac');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>(INITIAL_TEAM_MEMBERS);
   const [testResult, setTestResult] = useState<{
     tested: boolean;
@@ -177,6 +179,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         >
           <Smartphone size={16} className={activeTab === 'pwa' ? 'text-[#DC2626]' : ''} />
           <span>Install Aplikasi (HP & PC)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('roadmap')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer
+            ${activeTab === 'roadmap' ? 'border-amber-500 text-white' : 'border-transparent text-amber-400/80 hover:text-amber-300'}`}
+        >
+          <Clock size={16} className={activeTab === 'roadmap' ? 'text-amber-400' : ''} />
+          <span>Catatan Fitur Mendatang</span>
         </button>
       </div>
 
@@ -618,6 +629,58 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: CATATAN FITUR MASA DEPAN (MENUNGGU INSTRUKSI USER) */}
+      {activeTab === 'roadmap' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-800/80 text-xs text-amber-200 leading-relaxed flex items-start gap-3">
+            <Clock size={18} className="text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <strong className="text-white block mb-0.5">
+                Daftar Catatan Fitur Masa Depan (Standby - Menunggu Instruksi Anda)
+              </strong>
+              Sesuai instruksi Anda, seluruh saran fitur di bawah ini telah dicatat secara terstruktur dan tidak akan dieksekusi secara otomatis sebelum Anda memberikan instruksi spesifik. Kapan pun Anda siap mengeksekusi salah satu atau seluruh fitur ini, Anda tinggal menginstruksikannya.
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {FUTURE_FEATURES_ROADMAP.map((item) => (
+              <div
+                key={item.id}
+                className="bg-[#1E293B] border border-slate-700/80 p-5 rounded-2xl shadow-sm space-y-3 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-800">
+                    <span className="text-xs font-bold text-white">{item.title}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-800/40 font-mono whitespace-nowrap">
+                      ⏳ Menunggu Instruksi
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                    {item.summary}
+                  </p>
+
+                  <div className="mt-3 space-y-1">
+                    <span className="text-[11px] font-bold text-slate-400 block uppercase tracking-wider">
+                      Cakupan Teknis:
+                    </span>
+                    <ul className="text-[11px] text-slate-400 space-y-1 list-disc list-inside">
+                      {item.technicalScope.map((scope, idx) => (
+                        <li key={idx}>{scope}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800/80 text-[11px] text-slate-400">
+                  <strong className="text-slate-300">Dampak Bisnis:</strong> {item.estimatedImpact}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

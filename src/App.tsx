@@ -44,6 +44,7 @@ import { QuotationsView } from './components/views/QuotationsView';
 import { InvoicesView } from './components/views/InvoicesView';
 import { PaymentsView } from './components/views/PaymentsView';
 import { SettingsView } from './components/views/SettingsView';
+import { ReportsView } from './components/views/ReportsView';
 
 // Modals
 import { ClientModal } from './components/modals/ClientModal';
@@ -57,6 +58,7 @@ import { DocumentPreviewModal } from './components/modals/DocumentPreviewModal';
 import { GasScriptModal } from './components/modals/GasScriptModal';
 import { ConfirmDeleteModal } from './components/modals/ConfirmDeleteModal';
 import { PWAInstallModal } from './components/modals/PWAInstallModal';
+import { WhatsAppModal } from './components/modals/WhatsAppModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { usePWAInstall } from './hooks/usePWAInstall';
 
@@ -131,6 +133,24 @@ export default function App() {
     itemLabel?: string;
     onConfirm: () => void;
   }>({ open: false, title: '', message: '', onConfirm: () => {} });
+
+  const [whatsAppModal, setWhatsAppModal] = useState<{
+    open: boolean;
+    type: 'invoice' | 'quotation' | 'meeting' | 'payment';
+    data: any;
+    client?: Client;
+  }>({ open: false, type: 'invoice', data: null });
+
+  const handleOpenWhatsApp = (
+    type: 'invoice' | 'quotation' | 'meeting' | 'payment',
+    data: any
+  ) => {
+    let client: Client | undefined;
+    if (data?.clientId) {
+      client = clients.find((c) => c.id === data.clientId);
+    }
+    setWhatsAppModal({ open: true, type, data, client });
+  };
 
   // Save changes to localStorage safely
   useEffect(() => {
@@ -725,6 +745,7 @@ export default function App() {
                 onEditMeeting={(meeting) => setMeetingModal({ open: true, initial: meeting })}
                 onDeleteMeeting={handleDeleteMeeting}
                 onUpdateStatus={handleUpdateMeetingStatus}
+                onSendWhatsApp={(m) => handleOpenWhatsApp('meeting', m)}
               />
             )}
 
@@ -756,6 +777,7 @@ export default function App() {
                   setPreviewModal({ open: true, type: 'quotation', data: quo, client });
                 }}
                 onUpdateStatus={handleUpdateQuotationStatus}
+                onSendWhatsApp={(quo) => handleOpenWhatsApp('quotation', quo)}
               />
             )}
 
@@ -772,6 +794,7 @@ export default function App() {
                   setPreviewModal({ open: true, type: 'invoice', data: inv, client });
                 }}
                 onUpdateStatus={handleUpdateInvoiceStatus}
+                onSendWhatsApp={(inv) => handleOpenWhatsApp('invoice', inv)}
               />
             )}
 
@@ -788,6 +811,19 @@ export default function App() {
                   setPreviewModal({ open: true, type: 'payment', data: pay, client });
                 }}
                 onUpdateStatus={handleUpdatePaymentStatus}
+                onSendWhatsApp={(pay) => handleOpenWhatsApp('payment', pay)}
+              />
+            )}
+
+            {currentTab === 'reports' && (
+              <ReportsView
+                clients={clients}
+                invoices={invoices}
+                payments={payments}
+                estimasiList={estimasiList}
+                leads={leads}
+                meetings={meetings}
+                onSelectTab={setCurrentTab}
               />
             )}
 
@@ -972,6 +1008,15 @@ export default function App() {
           onCancel={() => setConfirmDelete({ open: false, title: '', message: '', onConfirm: () => {} })}
         />
       )}
+
+      {/* WhatsApp Direct Sharing & Reminder Modal */}
+      <WhatsAppModal
+        isOpen={whatsAppModal.open}
+        onClose={() => setWhatsAppModal((prev) => ({ ...prev, open: false }))}
+        type={whatsAppModal.type}
+        data={whatsAppModal.data}
+        client={whatsAppModal.client}
+      />
 
       {/* PWA Install Modal (Step-by-step for Android, iOS, Windows, Mac) */}
       <PWAInstallModal

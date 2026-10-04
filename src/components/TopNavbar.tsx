@@ -33,6 +33,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   quotations: { title: 'Quotation Penawaran', subtitle: 'Pembuatan surat penawaran & convert ke invoice' },
   invoices: { title: 'Invoice Tagihan', subtitle: 'Penerbitan faktur tagihan resmi & monitoring piutang' },
   payments: { title: 'Payment Confirmation', subtitle: 'Pencatatan bukti bayar masuk & auto-lunas invoice' },
+  reports: { title: 'Laporan & Pusat Ekspor Agensi', subtitle: 'Rekapitulasi keuangan, performa divisi & unduh CSV / Excel' },
   sync: { title: 'Integrasi Google Sheets', subtitle: 'Koneksi modular GAS V2 & backup database' },
   settings: { title: 'Pengaturan & Hak Akses (RBAC)', subtitle: 'Kelola hak akses pengguna, integrasi Google Spreadsheet V2 & cadangan data' },
 };

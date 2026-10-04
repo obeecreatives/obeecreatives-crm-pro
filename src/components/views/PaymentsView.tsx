@@ -8,6 +8,7 @@ import {
   Search,
   CheckCircle2,
   Receipt,
+  MessageSquare,
 } from 'lucide-react';
 import { PaymentConfirmation, Client, Invoice, PaymentStatus } from '../../types';
 import { formatRupiah, formatDate, computeDocumentTotals } from '../../utils/formatters';
@@ -21,6 +22,7 @@ interface PaymentsViewProps {
   onDeletePayment: (payment: PaymentConfirmation) => void;
   onPrintPreview: (payment: PaymentConfirmation) => void;
   onUpdateStatus: (paymentId: string, status: PaymentStatus) => void;
+  onSendWhatsApp?: (payment: PaymentConfirmation) => void;
 }
 
 const STATUS_BADGES: Record<PaymentStatus, { bg: string; text: string }> = {
@@ -38,6 +40,7 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({
   onDeletePayment,
   onPrintPreview,
   onUpdateStatus,
+  onSendWhatsApp,
 }) => {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -161,6 +164,15 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({
                       >
                         <Printer size={14} />
                       </button>
+                      {onSendWhatsApp && (
+                        <button
+                          onClick={() => onSendWhatsApp(pay)}
+                          className="p-1.5 rounded-lg text-emerald-400 hover:text-white hover:bg-emerald-600/30 transition-colors"
+                          title="Kirim Konfirmasi via WhatsApp"
+                        >
+                          <MessageSquare size={13} />
+                        </button>
+                      )}
                       <button
                         onClick={() => onEditPayment(pay)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
@@ -206,17 +218,30 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">Status Pembayaran:</span>
-                  <select
-                    value={pay.status}
-                    onChange={(e) => onUpdateStatus(pay.id, e.target.value as PaymentStatus)}
-                    className={`text-[11px] font-bold rounded-lg px-2.5 py-1 border focus:outline-none ${badge.bg} ${badge.text}`}
-                  >
-                    <option value="Paid Off">Paid Off (Lunas)</option>
-                    <option value="Partial">Partial (Sebagian)</option>
-                    <option value="Pending">Pending</option>
-                  </select>
+                <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-slate-400">Status:</span>
+                    <select
+                      value={pay.status}
+                      onChange={(e) => onUpdateStatus(pay.id, e.target.value as PaymentStatus)}
+                      className={`text-[11px] font-bold rounded-lg px-2.5 py-1 border focus:outline-none ${badge.bg} ${badge.text}`}
+                    >
+                      <option value="Paid Off">Paid Off (Lunas)</option>
+                      <option value="Partial">Partial (Sebagian)</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </div>
+
+                  {onSendWhatsApp && (
+                    <button
+                      onClick={() => onSendWhatsApp(pay)}
+                      className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/80 px-2 py-1 rounded-lg border border-emerald-900/50 transition-colors cursor-pointer"
+                      title="Kirim Bukti Kuitansi ke WhatsApp"
+                    >
+                      <MessageSquare size={12} />
+                      <span>Kirim WA</span>
+                    </button>
+                  )}
                 </div>
               </div>
             );

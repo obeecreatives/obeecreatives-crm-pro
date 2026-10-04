@@ -9,6 +9,7 @@ import {
   Trash2,
   Edit2,
   Search,
+  MessageSquare,
 } from 'lucide-react';
 import { Quotation, Client, QuotationStatus } from '../../types';
 import { formatRupiah, formatDate, computeDocumentTotals } from '../../utils/formatters';
@@ -22,6 +23,7 @@ interface QuotationsViewProps {
   onConvertToInvoice: (quotation: Quotation) => void;
   onPrintPreview: (quotation: Quotation) => void;
   onUpdateStatus: (quotationId: string, status: QuotationStatus) => void;
+  onSendWhatsApp?: (quotation: Quotation) => void;
 }
 
 const STATUS_BADGES: Record<QuotationStatus, { bg: string; text: string }> = {
@@ -40,6 +42,7 @@ export const QuotationsView: React.FC<QuotationsViewProps> = ({
   onConvertToInvoice,
   onPrintPreview,
   onUpdateStatus,
+  onSendWhatsApp,
 }) => {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -149,6 +152,15 @@ export const QuotationsView: React.FC<QuotationsViewProps> = ({
                       >
                         <Printer size={14} />
                       </button>
+                      {onSendWhatsApp && (
+                        <button
+                          onClick={() => onSendWhatsApp(quo)}
+                          className="p-1.5 rounded-lg text-emerald-400 hover:text-white hover:bg-emerald-600/30 transition-colors"
+                          title="Kirim Penawaran via WhatsApp"
+                        >
+                          <MessageSquare size={13} />
+                        </button>
+                      )}
                       <button
                         onClick={() => onEditQuotation(quo)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
@@ -196,13 +208,26 @@ export const QuotationsView: React.FC<QuotationsViewProps> = ({
                     <option value="Ditolak">Ditolak</option>
                   </select>
 
-                  <button
-                    onClick={() => onConvertToInvoice(quo)}
-                    className="flex items-center gap-1 text-xs font-bold text-red-400 hover:text-red-300 bg-red-950/40 hover:bg-red-950/80 px-2.5 py-1 rounded-lg border border-red-900/50 transition-colors cursor-pointer"
-                  >
-                    <Receipt size={13} />
-                    <span>→ Convert ke Invoice</span>
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    {onSendWhatsApp && (
+                      <button
+                        onClick={() => onSendWhatsApp(quo)}
+                        className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/80 px-2 py-1 rounded-lg border border-emerald-900/50 transition-colors cursor-pointer"
+                        title="Kirim Penawaran ke WhatsApp"
+                      >
+                        <MessageSquare size={12} />
+                        <span>Kirim WA</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => onConvertToInvoice(quo)}
+                      className="flex items-center gap-1 text-xs font-bold text-red-400 hover:text-red-300 bg-red-950/40 hover:bg-red-950/80 px-2.5 py-1 rounded-lg border border-red-900/50 transition-colors cursor-pointer"
+                    >
+                      <Receipt size={13} />
+                      <span>→ Convert ke Invoice</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             );

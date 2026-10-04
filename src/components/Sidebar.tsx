@@ -15,6 +15,7 @@ import {
   Layers,
   ShieldCheck,
   Download,
+  BarChart3,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -63,6 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'quotations', label: 'Quotation', icon: FileSpreadsheet },
     { id: 'invoices', label: 'Invoice', icon: Receipt },
     { id: 'payments', label: 'Pembayaran', icon: CreditCard },
+    { id: 'reports', label: 'Laporan & Ekspor', icon: BarChart3 },
     { id: 'settings', label: 'Pengaturan & Akses', icon: Settings },
   ];
 

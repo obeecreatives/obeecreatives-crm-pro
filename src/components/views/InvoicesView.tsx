@@ -7,6 +7,7 @@ import {
   Trash2,
   Edit2,
   Search,
+  MessageSquare,
 } from 'lucide-react';
 import { Invoice, Client, InvoiceStatus } from '../../types';
 import { formatRupiah, formatDate, computeDocumentTotals } from '../../utils/formatters';
@@ -20,6 +21,7 @@ interface InvoicesViewProps {
   onCreatePayment: (invoice: Invoice) => void;
   onPrintPreview: (invoice: Invoice) => void;
   onUpdateStatus: (invoiceId: string, status: InvoiceStatus) => void;
+  onSendWhatsApp?: (invoice: Invoice) => void;
 }
 
 const STATUS_BADGES: Record<InvoiceStatus, { bg: string; text: string }> = {
@@ -37,6 +39,7 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
   onCreatePayment,
   onPrintPreview,
   onUpdateStatus,
+  onSendWhatsApp,
 }) => {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -180,6 +183,15 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
                       >
                         <Printer size={14} />
                       </button>
+                      {onSendWhatsApp && (
+                        <button
+                          onClick={() => onSendWhatsApp(inv)}
+                          className="p-1.5 rounded-lg text-emerald-400 hover:text-white hover:bg-emerald-600/30 transition-colors"
+                          title="Kirim Tagihan via WhatsApp"
+                        >
+                          <MessageSquare size={13} />
+                        </button>
+                      )}
                       <button
                         onClick={() => onEditInvoice(inv)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
@@ -226,19 +238,32 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
                     <option value="Draft">Draft</option>
                   </select>
 
-                  {inv.status !== 'Lunas' ? (
-                    <button
-                      onClick={() => onCreatePayment(inv)}
-                      className="flex items-center gap-1 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-900/50 transition-colors cursor-pointer"
-                    >
-                      <CreditCard size={13} />
-                      <span>+ Konfirmasi Bayar</span>
-                    </button>
-                  ) : (
-                    <span className="text-[11px] text-emerald-400 font-semibold font-mono">
-                      ✓ Lunas Terverifikasi
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {onSendWhatsApp && (
+                      <button
+                        onClick={() => onSendWhatsApp(inv)}
+                        className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/80 px-2 py-1 rounded-lg border border-emerald-900/50 transition-colors cursor-pointer"
+                        title="Kirim ke WhatsApp"
+                      >
+                        <MessageSquare size={12} />
+                        <span>Kirim WA</span>
+                      </button>
+                    )}
+
+                    {inv.status !== 'Lunas' ? (
+                      <button
+                        onClick={() => onCreatePayment(inv)}
+                        className="flex items-center gap-1 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-900/50 transition-colors cursor-pointer"
+                      >
+                        <CreditCard size={13} />
+                        <span>+ Konfirmasi Bayar</span>
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-emerald-400 font-semibold font-mono">
+                        ✓ Lunas Terverifikasi
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             );
