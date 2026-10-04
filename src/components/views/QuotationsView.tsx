@@ -49,9 +49,9 @@ export const QuotationsView: React.FC<QuotationsViewProps> = ({
     const s = search.toLowerCase();
     const matchSearch =
       !s ||
-      q.quotationNumber.toLowerCase().includes(s) ||
-      q.proposeToName.toLowerCase().includes(s) ||
-      q.servicePeriod.toLowerCase().includes(s);
+      String(q.quotationNumber || '').toLowerCase().includes(s) ||
+      String(q.proposeToName || '').toLowerCase().includes(s) ||
+      String(q.servicePeriod || '').toLowerCase().includes(s);
     return matchStatus && matchSearch;
   });
 

@@ -47,11 +47,11 @@ export const ClientsView: React.FC<ClientsViewProps> = ({
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
-      c.company.toLowerCase().includes(q) ||
-      c.name.toLowerCase().includes(q) ||
-      c.phone.toLowerCase().includes(q) ||
-      c.email.toLowerCase().includes(q) ||
-      c.notes.toLowerCase().includes(q);
+      String(c.company || '').toLowerCase().includes(q) ||
+      String(c.name || '').toLowerCase().includes(q) ||
+      String(c.phone || '').toLowerCase().includes(q) ||
+      String(c.email || '').toLowerCase().includes(q) ||
+      String(c.notes || '').toLowerCase().includes(q);
 
     const matchDivision =
       selectedDivision === 'all'

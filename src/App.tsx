@@ -59,53 +59,37 @@ import { ConfirmDeleteModal } from './components/modals/ConfirmDeleteModal';
 
 import { DEFAULT_GAS_CRM_URL, testGasConnection, fetchAllSheetsData } from './utils/gasApi';
 
+function safeLoadArray<T>(key: string, fallback: T[]): T[] {
+  try {
+    const saved = localStorage.getItem(key);
+    if (!saved || saved === 'undefined' || saved === 'null') return fallback;
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default function App() {
   // Theme state: Default Dark Mode as requested
   const [isDark, setIsDark] = useState<boolean>(() => {
-    const saved = localStorage.getItem('obee_theme');
-    return saved !== null ? saved === 'dark' : true;
+    try {
+      const saved = localStorage.getItem('obee_theme');
+      return saved !== null ? saved === 'dark' : true;
+    } catch {
+      return true;
+    }
   });
 
   // State with LocalStorage Persistence
-  const [clients, setClients] = useState<Client[]>(() => {
-    const saved = localStorage.getItem('obee_crm_clients');
-    return saved ? JSON.parse(saved) : INITIAL_CLIENTS;
-  });
-
-  const [equipmentList, setEquipmentList] = useState<EquipmentItem[]>(() => {
-    const saved = localStorage.getItem('obee_equipment');
-    return saved ? JSON.parse(saved) : INITIAL_EQUIPMENT;
-  });
-
-  const [leads, setLeads] = useState<Lead[]>(() => {
-    const saved = localStorage.getItem('obee_leads');
-    return saved ? JSON.parse(saved) : INITIAL_LEADS;
-  });
-
-  const [meetings, setMeetings] = useState<Meeting[]>(() => {
-    const saved = localStorage.getItem('obee_meetings');
-    return saved ? JSON.parse(saved) : INITIAL_MEETINGS;
-  });
-
-  const [estimasiList, setEstimasiList] = useState<Estimasi[]>(() => {
-    const saved = localStorage.getItem('obee_estimasi');
-    return saved ? JSON.parse(saved) : INITIAL_ESTIMASI;
-  });
-
-  const [quotations, setQuotations] = useState<Quotation[]>(() => {
-    const saved = localStorage.getItem('obee_quotations');
-    return saved ? JSON.parse(saved) : INITIAL_QUOTATIONS;
-  });
-
-  const [invoices, setInvoices] = useState<Invoice[]>(() => {
-    const saved = localStorage.getItem('obee_invoices');
-    return saved ? JSON.parse(saved) : INITIAL_INVOICES;
-  });
-
-  const [payments, setPayments] = useState<PaymentConfirmation[]>(() => {
-    const saved = localStorage.getItem('obee_payments');
-    return saved ? JSON.parse(saved) : INITIAL_PAYMENTS;
-  });
+  const [clients, setClients] = useState<Client[]>(() => safeLoadArray('obee_crm_clients', INITIAL_CLIENTS));
+  const [equipmentList, setEquipmentList] = useState<EquipmentItem[]>(() => safeLoadArray('obee_equipment', INITIAL_EQUIPMENT));
+  const [leads, setLeads] = useState<Lead[]>(() => safeLoadArray('obee_leads', INITIAL_LEADS));
+  const [meetings, setMeetings] = useState<Meeting[]>(() => safeLoadArray('obee_meetings', INITIAL_MEETINGS));
+  const [estimasiList, setEstimasiList] = useState<Estimasi[]>(() => safeLoadArray('obee_estimasi', INITIAL_ESTIMASI));
+  const [quotations, setQuotations] = useState<Quotation[]>(() => safeLoadArray('obee_quotations', INITIAL_QUOTATIONS));
+  const [invoices, setInvoices] = useState<Invoice[]>(() => safeLoadArray('obee_invoices', INITIAL_INVOICES));
+  const [payments, setPayments] = useState<PaymentConfirmation[]>(() => safeLoadArray('obee_payments', INITIAL_PAYMENTS));
 
   const [userRole, setUserRole] = useState<UserRole>('Super Admin / Project Manager');
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
@@ -145,41 +129,43 @@ export default function App() {
     onConfirm: () => void;
   }>({ open: false, title: '', message: '', onConfirm: () => {} });
 
-  // Save changes to localStorage
+  // Save changes to localStorage safely
   useEffect(() => {
-    localStorage.setItem('obee_crm_clients', JSON.stringify(clients));
+    try { localStorage.setItem('obee_crm_clients', JSON.stringify(clients)); } catch {}
   }, [clients]);
 
   useEffect(() => {
-    localStorage.setItem('obee_equipment', JSON.stringify(equipmentList));
+    try { localStorage.setItem('obee_equipment', JSON.stringify(equipmentList)); } catch {}
   }, [equipmentList]);
 
   useEffect(() => {
-    localStorage.setItem('obee_leads', JSON.stringify(leads));
+    try { localStorage.setItem('obee_leads', JSON.stringify(leads)); } catch {}
   }, [leads]);
 
   useEffect(() => {
-    localStorage.setItem('obee_meetings', JSON.stringify(meetings));
+    try { localStorage.setItem('obee_meetings', JSON.stringify(meetings)); } catch {}
   }, [meetings]);
 
   useEffect(() => {
-    localStorage.setItem('obee_estimasi', JSON.stringify(estimasiList));
+    try { localStorage.setItem('obee_estimasi', JSON.stringify(estimasiList)); } catch {}
   }, [estimasiList]);
 
   useEffect(() => {
-    localStorage.setItem('obee_quotations', JSON.stringify(quotations));
+    try { localStorage.setItem('obee_quotations', JSON.stringify(quotations)); } catch {}
   }, [quotations]);
 
   useEffect(() => {
-    localStorage.setItem('obee_invoices', JSON.stringify(invoices));
+    try { localStorage.setItem('obee_invoices', JSON.stringify(invoices)); } catch {}
   }, [invoices]);
 
   useEffect(() => {
-    localStorage.setItem('obee_payments', JSON.stringify(payments));
+    try { localStorage.setItem('obee_payments', JSON.stringify(payments)); } catch {}
   }, [payments]);
 
   useEffect(() => {
-    localStorage.setItem('obee_theme', isDark ? 'dark' : 'light');
+    try {
+      localStorage.setItem('obee_theme', isDark ? 'dark' : 'light');
+    } catch {}
     if (isDark) {
       document.documentElement.classList.add('dark');
       document.body.className = 'bg-[#0B0F17] text-slate-100 antialiased selection:bg-red-500/20 selection:text-[#EF4444]';
@@ -250,30 +236,31 @@ export default function App() {
     setIsSyncing(false);
 
     if (result.status === 'success' && result.data) {
-      if (Array.isArray(result.data.clients) && result.data.clients.length > 0) {
+      if (Array.isArray(result.data.clients)) {
         setClients(result.data.clients);
       }
-      if (Array.isArray(result.data.leads) && result.data.leads.length > 0) {
+      if (Array.isArray(result.data.leads)) {
         setLeads(result.data.leads);
       }
-      if (Array.isArray(result.data.invoices) && result.data.invoices.length > 0) {
+      if (Array.isArray(result.data.invoices)) {
         setInvoices(result.data.invoices);
       }
-      if (Array.isArray(result.data.quotations) && result.data.quotations.length > 0) {
+      if (Array.isArray(result.data.quotations)) {
         setQuotations(result.data.quotations);
       }
-      if (Array.isArray(result.data.meetings) && result.data.meetings.length > 0) {
+      if (Array.isArray(result.data.meetings)) {
         setMeetings(result.data.meetings);
       }
-      if (Array.isArray(result.data.estimasi) && result.data.estimasi.length > 0) {
+      if (Array.isArray(result.data.estimasi)) {
         setEstimasiList(result.data.estimasi);
       }
-      if (Array.isArray(result.data.paymentConfirmations) && result.data.paymentConfirmations.length > 0) {
+      if (Array.isArray(result.data.paymentConfirmations)) {
         setPayments(result.data.paymentConfirmations);
       }
       const clientCount = result.data.clients?.length || 0;
       const invoiceCount = result.data.invoices?.length || 0;
-      showToast(`Data sheet asli berhasil disinkronkan (${clientCount} klien, ${invoiceCount} invoice terupdate)!`, 'success');
+      const estimasiCount = result.data.estimasi?.length || 0;
+      showToast(`Data sheet asli berhasil disinkronkan (${clientCount} klien, ${invoiceCount} invoice, ${estimasiCount} estimasi)!`, 'success');
     } else if (result.code === 'ACCESS_DENIED') {
       showToast('Akses Ditolak oleh Apps Script: ubah setting ke "Anyone" dan pasang skrip V2.', 'error');
       setGasScriptModalOpen(true);
@@ -704,6 +691,7 @@ export default function App() {
                 invoices={invoices}
                 payments={payments}
                 quotations={quotations}
+                estimasiList={estimasiList}
                 onNavigateTab={setCurrentTab}
                 onOpenClient={(client) => setClientModal({ open: true, initial: client })}
                 onNewClient={() => setClientModal({ open: true })}

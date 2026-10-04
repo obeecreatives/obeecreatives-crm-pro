@@ -47,15 +47,15 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({
     const s = search.toLowerCase();
     const matchSearch =
       !s ||
-      p.confirmationNumber.toLowerCase().includes(s) ||
-      p.confirmToName.toLowerCase().includes(s) ||
-      p.bankSource.toLowerCase().includes(s);
+      String(p.confirmationNumber || '').toLowerCase().includes(s) ||
+      String(p.confirmToName || '').toLowerCase().includes(s) ||
+      String(p.bankSource || '').toLowerCase().includes(s);
     return matchStatus && matchSearch;
   });
 
   const totalPaidOff = payments
-    .filter((p) => p.status === 'Paid Off')
-    .reduce((acc, p) => acc + computeDocumentTotals(p.items, p.discount).grand, 0);
+    .filter((p) => p && p.status === 'Paid Off')
+    .reduce((acc, p) => acc + computeDocumentTotals(Array.isArray(p.items) ? p.items : [], p.discount).grand, 0);
 
   return (
     <div className="space-y-5">

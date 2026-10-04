@@ -50,9 +50,9 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
-      m.title.toLowerCase().includes(q) ||
-      m.location.toLowerCase().includes(q) ||
-      m.attendees.toLowerCase().includes(q);
+      String(m.title || '').toLowerCase().includes(q) ||
+      String(m.location || '').toLowerCase().includes(q) ||
+      String(m.attendees || '').toLowerCase().includes(q);
     return matchStatus && matchSearch;
   });
 

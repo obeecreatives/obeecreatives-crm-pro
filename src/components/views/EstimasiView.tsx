@@ -33,7 +33,7 @@ export const EstimasiView: React.FC<EstimasiViewProps> = ({
   onPrintPreview,
 }) => {
   const getClientName = (cId: string) => {
-    const c = clients.find((client) => client.id === cId);
+    const c = (clients || []).find((client) => client && client.id === cId);
     return c ? (c.company || c.name) : '—';
   };
 
@@ -127,7 +127,7 @@ export const EstimasiView: React.FC<EstimasiViewProps> = ({
                 {/* Items Summary Pills */}
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   <span className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded font-mono">
-                    {est.items.length} Item Rincian
+                    {(est.items || []).length} Item Rincian
                   </span>
                   <span className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded font-mono">
                     Anggaran: {formatRupiah(est.anggaran)}

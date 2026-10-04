@@ -30,13 +30,13 @@ export const PipelineView: React.FC<PipelineViewProps> = ({
   onMoveStage,
 }) => {
   const getClientLabel = (cId: string) => {
-    const c = clients.find((client) => client.id === cId);
+    const c = (clients || []).find((client) => client && client.id === cId);
     return c ? (c.company || c.name) : '—';
   };
 
-  const totalPipelineValue = leads
-    .filter((l) => l.stage !== 'Lost')
-    .reduce((acc, l) => acc + (l.value || 0), 0);
+  const totalPipelineValue = (leads || [])
+    .filter((l) => l && l.stage !== 'Lost')
+    .reduce((acc, l) => acc + (Number(l.value) || 0), 0);
 
   return (
     <div className="space-y-5">

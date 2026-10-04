@@ -41,24 +41,41 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  const filtered = invoices.filter((i) => {
+  // Clean up ghost duplicate empty invoices
+  const cleanInvoices = (invoices || []).reduce<Invoice[]>((acc, inv) => {
+    if (!inv) return acc;
+    const invNum = String(inv.invoiceNumber || '').trim();
+    const existingIdx = acc.findIndex((x) => String(x.invoiceNumber || '').trim() === invNum);
+    if (existingIdx === -1) {
+      acc.push(inv);
+    } else {
+      const existingItemsTotal = (acc[existingIdx].items || []).reduce((sum, it) => sum + (Number(it.unitPrice) || 0), 0);
+      const newItemsTotal = (inv.items || []).reduce((sum, it) => sum + (Number(it.unitPrice) || 0), 0);
+      if (existingItemsTotal === 0 && newItemsTotal > 0) {
+        acc[existingIdx] = inv;
+      }
+    }
+    return acc;
+  }, []);
+
+  const filtered = cleanInvoices.filter((i) => {
     const matchStatus = filterStatus === 'all' || i.status === filterStatus;
     const s = search.toLowerCase();
     const matchSearch =
       !s ||
-      i.invoiceNumber.toLowerCase().includes(s) ||
-      i.billToName.toLowerCase().includes(s) ||
-      i.servicePeriod.toLowerCase().includes(s);
+      String(i.invoiceNumber || '').toLowerCase().includes(s) ||
+      String(i.billToName || '').toLowerCase().includes(s) ||
+      String(i.servicePeriod || '').toLowerCase().includes(s);
     return matchStatus && matchSearch;
   });
 
-  const unpaidTotal = invoices
-    .filter((i) => i.status === 'Belum Dibayar')
-    .reduce((acc, i) => acc + computeDocumentTotals(i.items, i.discount).grand, 0);
+  const unpaidTotal = cleanInvoices
+    .filter((i) => i && i.status === 'Belum Dibayar')
+    .reduce((acc, i) => acc + computeDocumentTotals(Array.isArray(i.items) ? i.items : [], i.discount).grand, 0);
 
-  const lunasTotal = invoices
-    .filter((i) => i.status === 'Lunas')
-    .reduce((acc, i) => acc + computeDocumentTotals(i.items, i.discount).grand, 0);
+  const lunasTotal = cleanInvoices
+    .filter((i) => i && i.status === 'Lunas')
+    .reduce((acc, i) => acc + computeDocumentTotals(Array.isArray(i.items) ? i.items : [], i.discount).grand, 0);
 
   return (
     <div className="space-y-5">
