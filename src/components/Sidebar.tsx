@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Download,
   BarChart3,
+  BookOpen,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -55,18 +56,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [showAppSwitcher, setShowAppSwitcher] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'clients', label: 'Klien Hub', icon: Users, badge: smmClientCount > 0 ? `${smmClientCount} SMM` : undefined },
-    { id: 'pipeline', label: 'Pipeline Leads', icon: Kanban },
-    { id: 'meetings', label: 'Jadwal Meeting', icon: CalendarDays },
-    { id: 'estimasi', label: 'Estimasi RAB', icon: Calculator },
-    { id: 'quotations', label: 'Quotation', icon: FileSpreadsheet },
-    { id: 'invoices', label: 'Invoice', icon: Receipt },
-    { id: 'payments', label: 'Pembayaran', icon: CreditCard },
-    { id: 'reports', label: 'Laporan & Ekspor', icon: BarChart3 },
-    { id: 'settings', label: 'Pengaturan & Akses', icon: Settings },
+  const allNavItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator', 'Client Partner'] },
+    { id: 'clients', label: 'Klien Hub', icon: Users, badge: smmClientCount > 0 ? `${smmClientCount} SMM` : undefined, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
+    { id: 'pipeline', label: 'Pipeline Leads', icon: Kanban, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'meetings', label: 'Jadwal Meeting', icon: CalendarDays, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator', 'Client Partner'] },
+    { id: 'estimasi', label: 'Estimasi RAB', icon: Calculator, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
+    { id: 'quotations', label: 'Quotation', icon: FileSpreadsheet, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Client Partner'] },
+    { id: 'invoices', label: 'Invoice', icon: Receipt, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'payments', label: 'Pembayaran', icon: CreditCard, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'reports', label: 'Laporan & Ekspor', icon: BarChart3, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'guide', label: 'Panduan Staff', icon: BookOpen, badge: 'SOP', roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
+    { id: 'settings', label: 'Pengaturan & Akses', icon: Settings, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
   ];
+
+  const navItems = allNavItems.filter((item) => item.roles.includes(userRole));
 
   const roleStyles = ROLE_COLORS[userRole] || ROLE_COLORS['Super Admin / Project Manager'];
 

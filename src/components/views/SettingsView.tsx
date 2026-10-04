@@ -63,8 +63,10 @@ const PERMISSIONS_MATRIX: RolePermission[] = [
   { module: 'Quotation (Surat Penawaran)', superAdmin: true, webDev: true, admin: true, creator: false, client: true, note: 'Pembuatan & persetujuan penawaran resmi' },
   { module: 'Invoice (Faktur Tagihan)', superAdmin: true, webDev: true, admin: true, creator: false, client: true, note: 'Penerbitan tagihan & riwayat pelunasan' },
   { module: 'Payment Confirmation (Kas Masuk)', superAdmin: true, webDev: true, admin: true, creator: false, client: false, note: 'Verifikasi bukti transfer & auto-lunas tagihan' },
-  { module: 'Integrasi Google Sheets (GAS V2)', superAdmin: true, webDev: true, admin: false, creator: false, client: false, note: 'Sinkronisasi endpoint API & skrip backend' },
-  { module: 'Manajemen Hak Akses (RBAC)', superAdmin: true, webDev: true, admin: false, creator: false, client: false, note: 'Konfigurasi peran dan hak akses pengguna' },
+  { module: 'Laporan & Ekspor Agensi (CSV/Excel)', superAdmin: true, webDev: true, admin: true, creator: false, client: false, note: 'Rekapitulasi keuangan, performa omset divisi & ekspor data' },
+  { module: 'Buku Panduan Operasional Staff (SOP)', superAdmin: true, webDev: true, admin: true, creator: true, client: false, note: 'Panduan lengkap seluruh fitur, tata cara penggunaan & WhatsApp SOP untuk staf' },
+  { module: 'Integrasi Google Sheets (GAS V2)', superAdmin: true, webDev: true, admin: false, creator: false, client: false, note: 'Sinkronisasi endpoint API & skrip backend (Khusus Developer & Super Admin)' },
+  { module: 'Manajemen Hak Akses & Konfigurasi Sistem', superAdmin: true, webDev: true, admin: false, creator: false, client: false, note: 'Konfigurasi peran dan hak akses pengguna (Khusus Developer & Super Admin)' },
 ];
 
 interface TeamMember {

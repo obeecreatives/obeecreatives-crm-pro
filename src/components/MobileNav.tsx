@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Download,
   BarChart3,
+  BookOpen,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -53,18 +54,21 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     { id: 'meetings', label: 'Jadwal', icon: CalendarDays },
   ];
 
-  const allTabs = [
-    { id: 'dashboard', label: 'Dashboard Operasional', icon: LayoutDashboard },
-    { id: 'clients', label: 'Klien Hub (CRM)', icon: Users },
-    { id: 'pipeline', label: 'Pipeline Leads', icon: Kanban },
-    { id: 'meetings', label: 'Jadwal Meeting', icon: CalendarDays },
-    { id: 'estimasi', label: 'Estimasi Biaya (RAB)', icon: Calculator },
-    { id: 'quotations', label: 'Quotation Penawaran', icon: FileSpreadsheet },
-    { id: 'invoices', label: 'Invoice Tagihan', icon: Receipt },
-    { id: 'payments', label: 'Payment Confirmation', icon: CreditCard },
-    { id: 'reports', label: 'Laporan & Ekspor Agensi', icon: BarChart3 },
-    { id: 'settings', label: 'Pengaturan & Akses (RBAC)', icon: Settings },
+  const rawTabs = [
+    { id: 'dashboard', label: 'Dashboard Operasional', icon: LayoutDashboard, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator', 'Client Partner'] },
+    { id: 'clients', label: 'Klien Hub (CRM)', icon: Users, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
+    { id: 'pipeline', label: 'Pipeline Leads', icon: Kanban, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'meetings', label: 'Jadwal Meeting', icon: CalendarDays, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator', 'Client Partner'] },
+    { id: 'estimasi', label: 'Estimasi Biaya (RAB)', icon: Calculator, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
+    { id: 'quotations', label: 'Quotation Penawaran', icon: FileSpreadsheet, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Client Partner'] },
+    { id: 'invoices', label: 'Invoice Tagihan', icon: Receipt, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'payments', label: 'Payment Confirmation', icon: CreditCard, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'reports', label: 'Laporan & Ekspor Agensi', icon: BarChart3, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
+    { id: 'guide', label: 'Panduan Staff (SOP)', icon: BookOpen, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
+    { id: 'settings', label: 'Pengaturan & Akses (RBAC)', icon: Settings, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
   ];
+
+  const allTabs = rawTabs.filter((t) => t.roles.includes(userRole));
 
   return (
     <>
