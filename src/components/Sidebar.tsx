@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Layers,
   ShieldCheck,
+  Download,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -27,6 +28,8 @@ interface SidebarProps {
   onChangeRole: (role: UserRole) => void;
   clientCount: number;
   smmClientCount: number;
+  onInstallPwa?: () => void;
+  isInstalled?: boolean;
 }
 
 const ROLE_COLORS: Record<UserRole, { bg: string; text: string; border: string }> = {
@@ -45,6 +48,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userRole,
   onChangeRole,
   smmClientCount,
+  onInstallPwa,
+  isInstalled,
 }) => {
   const [showAppSwitcher, setShowAppSwitcher] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -202,6 +207,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
       </div>
+
+      {/* Install PWA Button (PC & Mobile) */}
+      {!isInstalled && onInstallPwa && (
+        <div className="px-3 pt-2">
+          <button
+            onClick={onInstallPwa}
+            className={`w-full flex items-center gap-2 p-2 rounded-xl text-xs font-semibold bg-red-950/40 hover:bg-red-900/60 border border-red-900/50 text-red-300 transition-colors cursor-pointer ${
+              isCollapsed ? 'justify-center' : 'justify-start'
+            }`}
+            title="Install CRM di PC/Laptop atau HP"
+          >
+            <Download size={15} className="text-[#EF4444] shrink-0" />
+            {!isCollapsed && <span className="truncate">Install di HP & PC</span>}
+          </button>
+        </div>
+      )}
 
       {/* Role Badges & User Footer */}
       <div className="p-3 border-t border-[#1E293B] relative">

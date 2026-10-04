@@ -15,6 +15,7 @@ import {
   Layers,
   ShieldCheck,
   ExternalLink,
+  Download,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -27,6 +28,8 @@ interface MobileNavProps {
   onQuickAdd: (type: 'client' | 'lead' | 'meeting' | 'estimasi' | 'quotation' | 'invoice') => void;
   userRole: UserRole;
   onChangeRole: (role: UserRole) => void;
+  onInstallPwa?: () => void;
+  isInstalled?: boolean;
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
@@ -37,6 +40,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onQuickAdd,
   userRole,
   onChangeRole,
+  onInstallPwa,
+  isInstalled,
 }) => {
   const [showQuickMenu, setShowQuickMenu] = useState(false);
 
@@ -220,6 +225,20 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                     </button>
                   );
                 })}
+
+                {/* Install App Button in Mobile Drawer */}
+                {!isInstalled && onInstallPwa && (
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onInstallPwa();
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-300 bg-red-950/40 hover:bg-red-900/60 border border-red-900/50 transition-colors mt-2"
+                  >
+                    <Download size={16} className="text-[#EF4444]" />
+                    <span>Install Aplikasi (HP & PC)</span>
+                  </button>
+                )}
               </div>
 
               {/* Ecosystem App Switcher Links */}

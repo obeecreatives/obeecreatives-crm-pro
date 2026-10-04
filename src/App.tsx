@@ -56,6 +56,9 @@ import { PaymentModal } from './components/modals/PaymentModal';
 import { DocumentPreviewModal } from './components/modals/DocumentPreviewModal';
 import { GasScriptModal } from './components/modals/GasScriptModal';
 import { ConfirmDeleteModal } from './components/modals/ConfirmDeleteModal';
+import { PWAInstallModal } from './components/modals/PWAInstallModal';
+import { OfflineIndicator } from './components/OfflineIndicator';
+import { usePWAInstall } from './hooks/usePWAInstall';
 
 import { DEFAULT_GAS_CRM_URL, testGasConnection, fetchAllSheetsData } from './utils/gasApi';
 
@@ -99,9 +102,9 @@ export default function App() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type?: 'success' | 'info' | 'error' } | null>(null);
 
-  // PWA installability
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [canInstallPwa, setCanInstallPwa] = useState<boolean>(false);
+  // PWA installability with usePWAInstall hook
+  const { isInstallable, isInstalled, isIOS, isMobile, triggerInstall } = usePWAInstall();
+  const [installModalOpen, setInstallModalOpen] = useState<boolean>(false);
 
   // Modals active state
   const [clientModal, setClientModal] = useState<{ open: boolean; initial?: Client | null }>({ open: false });
@@ -183,7 +186,7 @@ export default function App() {
     }, 4000);
   }, []);
 
-  // PWA Service Worker & Install Listener
+  // PWA Service Worker Registration
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -192,26 +195,15 @@ export default function App() {
           // SW registration failed gracefully
         });
     }
-
-    const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setCanInstallPwa(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
 
   const handleInstallPwa = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+    const outcome = await triggerInstall();
     if (outcome === 'accepted') {
-      showToast('Aplikasi berhasil diinstall di perangkat Anda!');
-      setCanInstallPwa(false);
+      showToast('Aplikasi berhasil dipasang di perangkat Anda!', 'success');
+    } else {
+      setInstallModalOpen(true);
     }
-    setDeferredPrompt(null);
   };
 
   // Fullscreen toggle
@@ -659,6 +651,8 @@ export default function App() {
         onChangeRole={setUserRole}
         clientCount={clients.length}
         smmClientCount={smmClientCount}
+        onInstallPwa={handleInstallPwa}
+        isInstalled={isInstalled}
       />
 
       {/* Main Content Area */}
@@ -674,7 +668,8 @@ export default function App() {
             onToggleTheme={() => setIsDark(!isDark)}
             isFullscreen={isFullscreen}
             onToggleFullscreen={handleToggleFullscreen}
-            canInstallPwa={canInstallPwa}
+            canInstallPwa={isInstallable}
+            isInstalled={isInstalled}
             onInstallPwa={handleInstallPwa}
             onSyncSheets={handleSyncSheets}
             isSyncing={isSyncing}
@@ -808,6 +803,9 @@ export default function App() {
                 onResetDefault={handleResetDefault}
                 clientCount={clients.length}
                 equipmentCount={equipmentList.length}
+                onInstallPwa={handleInstallPwa}
+                isInstalled={isInstalled}
+                isInstallable={isInstallable}
               />
             )}
           </main>
@@ -842,6 +840,8 @@ export default function App() {
         }}
         userRole={userRole}
         onChangeRole={setUserRole}
+        onInstallPwa={handleInstallPwa}
+        isInstalled={isInstalled}
       />
 
       {/* Toast Notification Banner */}
@@ -972,6 +972,23 @@ export default function App() {
           onCancel={() => setConfirmDelete({ open: false, title: '', message: '', onConfirm: () => {} })}
         />
       )}
+
+      {/* PWA Install Modal (Step-by-step for Android, iOS, Windows, Mac) */}
+      <PWAInstallModal
+        isOpen={installModalOpen}
+        onClose={() => setInstallModalOpen(false)}
+        isInstallable={isInstallable}
+        isInstalled={isInstalled}
+        isIOS={isIOS}
+        isMobile={isMobile}
+        onDirectInstall={async () => {
+          setInstallModalOpen(false);
+          await handleInstallPwa();
+        }}
+      />
+
+      {/* Offline Connectivity Notification */}
+      <OfflineIndicator />
     </div>
   );
 }

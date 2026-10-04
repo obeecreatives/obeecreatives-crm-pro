@@ -18,6 +18,10 @@ import {
   AlertCircle,
   CheckCircle2,
   ExternalLink,
+  Smartphone,
+  Laptop,
+  Share,
+  PlusSquare,
 } from 'lucide-react';
 import { UserRole } from '../../types';
 import { DEFAULT_GAS_CRM_URL, DEFAULT_GAS_EQUIPMENT_URL, testGasConnection } from '../../utils/gasApi';
@@ -33,6 +37,9 @@ interface SettingsViewProps {
   onResetDefault: () => void;
   clientCount: number;
   equipmentCount: number;
+  onInstallPwa?: () => void;
+  isInstalled?: boolean;
+  isInstallable?: boolean;
 }
 
 interface RolePermission {
@@ -85,8 +92,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onResetDefault,
   clientCount,
   equipmentCount,
+  onInstallPwa,
+  isInstalled,
+  isInstallable,
 }) => {
-  const [activeTab, setActiveTab] = useState<'rbac' | 'sheets' | 'backup'>('rbac');
+  const [activeTab, setActiveTab] = useState<'rbac' | 'sheets' | 'backup' | 'pwa'>('rbac');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>(INITIAL_TEAM_MEMBERS);
   const [testResult, setTestResult] = useState<{
     tested: boolean;
@@ -158,6 +168,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         >
           <Download size={16} className={activeTab === 'backup' ? 'text-[#DC2626]' : ''} />
           <span>Cadangan & Pemulihan Data</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('pwa')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer
+            ${activeTab === 'pwa' ? 'border-[#DC2626] text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+        >
+          <Smartphone size={16} className={activeTab === 'pwa' ? 'text-[#DC2626]' : ''} />
+          <span>Install Aplikasi (HP & PC)</span>
         </button>
       </div>
 
@@ -493,6 +512,112 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             >
               Reset ke Data Awal
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: INSTALL APLIKASI (PWA) */}
+      {activeTab === 'pwa' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Hero Install Banner */}
+          <div className="bg-[#1E293B] border border-[#1E293B] p-6 rounded-2xl shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-red-950/60 border border-red-800 text-red-500 flex items-center justify-center shrink-0">
+                  <Smartphone size={24} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Instalasi Aplikasi di HP & PC / Laptop</h3>
+                  <p className="text-xs text-slate-400">
+                    Gunakan CRM OBEECREATIVES seperti aplikasi bawaan (Native App) tanpa repot mengetik URL.
+                  </p>
+                </div>
+              </div>
+
+              {onInstallPwa && (
+                <button
+                  onClick={onInstallPwa}
+                  className="px-4 py-2.5 rounded-xl bg-[#DC2626] hover:bg-red-700 active:bg-red-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-950/50 transition-all cursor-pointer shrink-0"
+                >
+                  <Download size={16} />
+                  <span>{isInstalled ? 'Buka Panduan Install' : 'Install Aplikasi Sekarang'}</span>
+                </button>
+              )}
+            </div>
+
+            {/* PWA Verification Matrix */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+              <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+                <div>
+                  <span className="font-bold text-white block">Web App Manifest</span>
+                  <span className="text-[11px] text-slate-400">Standalone & Ikon Maskable Siap</span>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+                <div>
+                  <span className="font-bold text-white block">Service Worker V2</span>
+                  <span className="text-[11px] text-slate-400">Dukungan Akses & Cache Offline</span>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+                <div>
+                  <span className="font-bold text-white block">Kompatibilitas Penuh</span>
+                  <span className="text-[11px] text-slate-400">Android, iOS, Windows, macOS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Device Guides Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* HP / Mobile Guide */}
+            <div className="bg-[#1E293B] border border-[#1E293B] p-5 rounded-2xl shadow-sm space-y-3">
+              <div className="flex items-center gap-2 text-white font-bold text-sm pb-2 border-b border-slate-800">
+                <Smartphone size={18} className="text-red-400" />
+                <span>Panduan Instalasi di HP (Smartphone)</span>
+              </div>
+              <div className="space-y-3 text-xs text-slate-300">
+                <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <span className="font-bold text-emerald-400 block mb-1">Android (Google Chrome / Edge):</span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Tekan tombol menu titik tiga (<strong>⋮</strong>) di pojok kanan atas browser Chrome, lalu pilih <strong>"Instal aplikasi"</strong> atau <strong>"Tambahkan ke Layar Utama"</strong>.
+                  </p>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <span className="font-bold text-blue-400 block mb-1">iPhone / iPad (Safari):</span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Buka di Safari, ketuk tombol <strong>Bagikan (Share)</strong> di bilah bawah, lalu pilih <strong>"Tambahkan ke Layar Utama" (Add to Home Screen)</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* PC / Laptop Guide */}
+            <div className="bg-[#1E293B] border border-[#1E293B] p-5 rounded-2xl shadow-sm space-y-3">
+              <div className="flex items-center gap-2 text-white font-bold text-sm pb-2 border-b border-slate-800">
+                <Laptop size={18} className="text-amber-400" />
+                <span>Panduan Instalasi di PC / Laptop</span>
+              </div>
+              <div className="space-y-3 text-xs text-slate-300">
+                <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <span className="font-bold text-amber-400 block mb-1">Google Chrome & Microsoft Edge di Windows/Mac:</span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Lihat pada <strong>Bilah Alamat (URL Bar)</strong> di pojok kanan atas. Klik ikon <strong>Install App</strong> yang berlogo komputer dengan tanda panah ke bawah, atau klik menu (⋮) ➔ <strong>Install CRM OBEECREATIVES</strong>.
+                  </p>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <span className="font-bold text-purple-400 block mb-1">Mode Window Standalone:</span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Setelah terinstall, aplikasi akan memiliki ikon sendiri di Desktop & Taskbar, dapat dibuka layaknya software desktop tanpa tab browser.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

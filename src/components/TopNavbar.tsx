@@ -17,6 +17,7 @@ interface TopNavbarProps {
   isFullscreen: boolean;
   onToggleFullscreen: () => void;
   canInstallPwa: boolean;
+  isInstalled?: boolean;
   onInstallPwa: () => void;
   onSyncSheets: () => void;
   isSyncing: boolean;
@@ -43,6 +44,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   isFullscreen,
   onToggleFullscreen,
   canInstallPwa,
+  isInstalled,
   onInstallPwa,
   onSyncSheets,
   isSyncing,
@@ -101,14 +103,18 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
         </button>
 
-        {/* Install PWA Button */}
-        {canInstallPwa && (
+        {/* Install PWA Button (PC, Laptop, & HP) */}
+        {!isInstalled && (
           <button
             onClick={onInstallPwa}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1E293B] hover:bg-slate-700 text-amber-400 text-xs font-semibold border border-amber-500/30 transition-all cursor-pointer"
-            title="Install Web Apps di Komputer atau HP Anda"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+              canInstallPwa
+                ? 'bg-red-500/10 hover:bg-red-500/20 text-[#EF4444] border-red-500/40 animate-pulse'
+                : 'bg-[#1E293B] hover:bg-slate-700 text-slate-200 border-slate-700'
+            }`}
+            title="Install CRM OBEECREATIVES di HP, Laptop, atau PC Anda"
           >
-            <Download size={14} />
+            <Download size={14} className={canInstallPwa ? 'text-[#DC2626]' : 'text-slate-300'} />
             <span className="hidden sm:inline">Install App</span>
           </button>
         )}
