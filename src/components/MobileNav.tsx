@@ -17,7 +17,6 @@ import {
   ExternalLink,
   Download,
   BarChart3,
-  BookOpen,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -64,7 +63,6 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     { id: 'invoices', label: 'Invoice Tagihan', icon: Receipt, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
     { id: 'payments', label: 'Payment Confirmation', icon: CreditCard, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
     { id: 'reports', label: 'Laporan & Ekspor Agensi', icon: BarChart3, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
-    { id: 'guide', label: 'Panduan Staff (SOP)', icon: BookOpen, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
     { id: 'settings', label: 'Pengaturan & Akses (RBAC)', icon: Settings, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
   ];
 

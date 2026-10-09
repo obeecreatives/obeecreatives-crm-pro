@@ -64,7 +64,6 @@ const PERMISSIONS_MATRIX: RolePermission[] = [
   { module: 'Invoice (Faktur Tagihan)', superAdmin: true, webDev: true, admin: true, creator: false, client: true, note: 'Penerbitan tagihan & riwayat pelunasan' },
   { module: 'Payment Confirmation (Kas Masuk)', superAdmin: true, webDev: true, admin: true, creator: false, client: false, note: 'Verifikasi bukti transfer & auto-lunas tagihan' },
   { module: 'Laporan & Ekspor Agensi (CSV/Excel)', superAdmin: true, webDev: true, admin: true, creator: false, client: false, note: 'Rekapitulasi keuangan, performa omset divisi & ekspor data' },
-  { module: 'Buku Panduan Operasional Staff (SOP)', superAdmin: true, webDev: true, admin: true, creator: true, client: false, note: 'Panduan lengkap seluruh fitur, tata cara penggunaan & WhatsApp SOP untuk staf' },
   { module: 'Integrasi Google Sheets (GAS V2)', superAdmin: true, webDev: true, admin: false, creator: false, client: false, note: 'Sinkronisasi endpoint API & skrip backend (Khusus Developer & Super Admin)' },
   { module: 'Manajemen Hak Akses & Konfigurasi Sistem', superAdmin: true, webDev: true, admin: false, creator: false, client: false, note: 'Konfigurasi peran dan hak akses pengguna (Khusus Developer & Super Admin)' },
 ];
@@ -223,7 +222,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {(
                 [
-                  { role: 'Super Admin / Project Manager', desc: 'Akses penuh seluruh 11 modul, keuangan, dan peralatan', color: 'border-red-500 bg-red-950/30 text-red-400' },
+                  { role: 'Super Admin / Project Manager', desc: 'Akses penuh seluruh 10 modul, keuangan, dan peralatan', color: 'border-red-500 bg-red-950/30 text-red-400' },
                   { role: 'Web Dev / Site Engineer', desc: 'Akses teknis, integrasi API, sinkronisasi sheet & skrip', color: 'border-emerald-500 bg-emerald-950/30 text-emerald-400' },
                   { role: 'Admin', desc: 'Akses CRM Klien, Quotation, Invoices, dan bukti bayar', color: 'border-amber-500 bg-amber-950/30 text-amber-400' },
                   { role: 'Staff Creator', desc: 'Akses Project Control, Klien Hub, Jadwal & Estimasi RAB', color: 'border-blue-500 bg-blue-950/30 text-blue-400' },

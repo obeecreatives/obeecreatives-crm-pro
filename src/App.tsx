@@ -45,7 +45,6 @@ import { InvoicesView } from './components/views/InvoicesView';
 import { PaymentsView } from './components/views/PaymentsView';
 import { SettingsView } from './components/views/SettingsView';
 import { ReportsView } from './components/views/ReportsView';
-import { StaffGuideView } from './components/views/StaffGuideView';
 
 // Modals
 import { ClientModal } from './components/modals/ClientModal';
@@ -824,13 +823,6 @@ export default function App() {
                 estimasiList={estimasiList}
                 leads={leads}
                 meetings={meetings}
-                onSelectTab={setCurrentTab}
-              />
-            )}
-
-            {currentTab === 'guide' && (
-              <StaffGuideView
-                userRole={userRole}
                 onSelectTab={setCurrentTab}
               />
             )}

@@ -16,7 +16,6 @@ import {
   ShieldCheck,
   Download,
   BarChart3,
-  BookOpen,
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { WORKSPACE_APPS_LIST } from '../data/initialData';
@@ -66,7 +65,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'invoices', label: 'Invoice', icon: Receipt, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
     { id: 'payments', label: 'Pembayaran', icon: CreditCard, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
     { id: 'reports', label: 'Laporan & Ekspor', icon: BarChart3, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
-    { id: 'guide', label: 'Panduan Staff', icon: BookOpen, badge: 'SOP', roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin', 'Staff Creator'] },
     { id: 'settings', label: 'Pengaturan & Akses', icon: Settings, roles: ['Super Admin / Project Manager', 'Web Dev / Site Engineer', 'Admin'] },
   ];
 
